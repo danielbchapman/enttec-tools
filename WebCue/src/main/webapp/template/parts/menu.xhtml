@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:insert name="menu">
+	<f:view contentType="text/html">
+		<div id="nav-bar-target" class="navbar">
+			<div class="navbar-inner">
+				<div class="container">
+					<a class="btn btn-navbar" data-toggle="collapse"
+						data-target=".nav-collapse"> <span class="icon-bar"></span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span>
+					</a> <a class="brand" href="#">Web Cue</a>
+					<div class="nav-collapse collapse">
+						<ul class="nav">
+							<li class="active"><a
+								href="#{sessionBean.contextUrl('control.xhtml')}">Control
+									Panel</a></li>
+							<li><a
+								href="#{sessionBean.contextUrl('cues.xhtml')}">Cue List</a>
+								</li>
+							<li><a
+								href="#{sessionBean.contextUrl('live.xhtml')}">Live</a>
+								</li>
+							<li><a
+								href="#{sessionBean.contextUrl('blind.xhtml')}">Blind</a>
+								</li>
+							<li><a
+								href="#{sessionBean.contextUrl('patch.xhtml')}">Patch</a>
+								</li>
+							<li><a
+								href="#{sessionBean.contextUrl('about.xhtml')}">About</a>
+							</li>
+
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div>
+			<h1>PUT LINKS HERE</h1>
+		</div>
+	</f:view>
+</ui:insert>
+</html>

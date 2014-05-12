@@ -1,0 +1,48 @@
+<html xmlns="http://www.w3.org/1999/xhtml"  
+    xmlns:h="http://java.sun.com/jsf/html"  
+    xmlns:f="http://java.sun.com/jsf/core"  
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:composite="http://java.sun.com/jsf/composite"
+>
+
+<composite:interface>
+	<composite:attribute name="levels" type="java.util.List" />
+</composite:interface>
+<composite:implementation>
+	<table>
+		<thead>
+			<tr>
+				<td colspan="10">
+					Active Levels...
+				</td>
+			</tr>
+		</thead>
+		<tbody>
+			<ui:repeat var="row" value="#{cc.attrs.levels}">
+				<tr>
+					<ui:repeat var="cell" value="#{row}">
+						<td>
+							<div class="channel-status">
+								<label class="channel #{cell.two != null ? 'marked' : ''}">#{cell.one.id}</label>
+								<p:inputText 
+									value="#{cell.two}"
+								>
+									<f:convertNumber integerOnly="true" pattern="##0"/>
+								</p:inputText>
+							</div>
+						</td>
+					</ui:repeat>
+				</tr>
+			</ui:repeat>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="10">
+					END TABLE
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+</composite:implementation>
+</html>  

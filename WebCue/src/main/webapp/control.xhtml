@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:cues="http://java.sun.com/jsf/composite/cues"
+>
+	<h:body>
+		<ui:composition template="/template/layouts/one.xhtml">
+			<ui:define name="title">Welcome | Powered by Twitter Bootstrap</ui:define>
+			
+			<ui:define name="main">
+				<h1>Web Cue | Control Panel</h1>
+				<h2>Current Cue:</h2>
+				<cues:cueDetail value="#{cueBean.cue}" />
+				
+				<h3>Save Show</h3>
+				<h:form>
+					<h:inputText value="#{controlBean.showName}"/>
+					<h:commandButton 
+						actionListener="#{controlBean.saveShow}" 
+						value="Save Show"
+					/>
+				</h:form>
+				
+				<h3>Load Show</h3>
+				<h:form>
+					<ui:repeat var="row" value="#{controlBean.shows}">
+						<h:commandButton value="Load: #{row}" actionListener="#{controlBean.loadShow}">
+							<f:attribute name="showFile" value="#{row}" />
+						</h:commandButton>
+						<br />
+					</ui:repeat>
+				</h:form>
+			</ui:define>
+		</ui:composition>
+	</h:body>
+</html>

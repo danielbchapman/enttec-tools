@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" 	
+>
+	<ui:composition template="/template/layouts/base.xhtml">
+	
+		<ui:define name="first">
+			<ui:insert name="menu">
+				<ui:include src="/template/parts/menu.xhtml"></ui:include>
+			</ui:insert>
+			
+			<ui:insert name="beforeContent">
+				<!-- AREA BEFORE CONTENT -->
+			</ui:insert>			
+		</ui:define>
+		
+		<ui:define name="middle">
+			<ui:insert name="allcontent">
+				<div class="hero-unit">
+					<h1>MAIN CONTENT</h1>
+					<p>This is the main content area</p>
+				</div>
+				<p>Possibly a footer or something...</p>
+			</ui:insert>
+			
+			<ui:insert name="subfooter">
+				<div class="offset1 span10 offset1">
+					<p>This is a sub-footer, displayed below the content as that often</p>
+				</div>
+			</ui:insert>
+		</ui:define>
+		
+		<ui:define name="last">
+			<ui:include src="/template/parts/footer.xhtml" />	
+		</ui:define>
+	</ui:composition>
+</html>

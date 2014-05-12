@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" 	
+>
+	<ui:composition template="/template/layouts/coremenu.xhtml">
+		<ui:define name="allcontent">
+			<div class="container">
+				<ui:insert name="main">
+					<h1>MAIN CONTENT</h1>
+					<p>
+						Mauris non erat hendrerit justo consequat Lectus id malesuada viverra, risus tellus tristique enim, 
+						vitae feugiat ante purus vel libero. Donec tempor, tortor blandit. Tempus nonummy, libero 
+						justo aliquam turpis, id placerat libero augue nec tortor. In blandit, felis ac cursus tempor.
+					</p>
+				</ui:insert>
+				
+				<div class="row">
+					<div class="span4">
+						<ui:insert name="left">
+							<h2>LEFT CONTENT</h2>
+							<p>
+							Mauris non erat hendrerit justo consequat Lectus id malesuada viverra, risus tellus tristique enim, 
+							vitae feugiat ante purus vel libero. Donec tempor, tortor blandit. Tempus nonummy, libero 
+							justo aliquam turpis, id placerat libero augue nec tortor. In blandit, felis ac cursus tempor.
+							</p>
+						</ui:insert>	
+					</div>
+					
+					<div class="span4">
+						<ui:insert name="center">
+							<h2>Center CONTENT</h2>
+							<p>
+							Mauris non erat hendrerit justo consequat Lectus id malesuada viverra, risus tellus tristique enim, 
+							vitae feugiat ante purus vel libero. Donec tempor, tortor blandit. Tempus nonummy, libero 
+							justo aliquam turpis, id placerat libero augue nec tortor. In blandit, felis ac cursus tempor.
+							</p>
+						</ui:insert>					
+					</div>
+					
+					<div class="span4" >
+						<ui:insert name="right">
+							<h2>Right CONTENT</h2>
+							<p>
+							Mauris non erat hendrerit justo consequat Lectus id malesuada viverra, risus tellus tristique enim, 
+							vitae feugiat ante purus vel libero. Donec tempor, tortor blandit. Tempus nonummy, libero 
+							justo aliquam turpis, id placerat libero augue nec tortor. In blandit, felis ac cursus tempor.
+							</p>
+						</ui:insert>					
+					</div>
+					
+					<br />
+				</div>
+			</div>
+			
+		</ui:define>
+		
+		<ui:define name="subfooter">
+			<ui:include src="/template/parts/subfooter.xhtml"></ui:include>
+		</ui:define>
+
+	</ui:composition>
+</html>

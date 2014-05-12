@@ -1,0 +1,73 @@
+<html xmlns="http://www.w3.org/1999/xhtml"  
+    xmlns:h="http://java.sun.com/jsf/html"  
+    xmlns:f="http://java.sun.com/jsf/core"  
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:composite="http://java.sun.com/jsf/composite"
+>
+
+<composite:interface>
+	<composite:attribute name="cue" type="com.danielbchapman.control.dmx.Cue"/>
+</composite:interface>
+<composite:implementation>
+	<p:panel>
+		<h1>Playback</h1>
+		<div>
+			<p:panel style="width:300px; display:inline-block; vertical-align:top;">
+				<h:commandButton
+					actionListener="#{cueBean.go}"
+					style="width:150px; height:150px; background: #0f0;"
+					value="GO #{cueBean.nextCue != null ? cueBean.nextCue.cueNumber : ''}">
+				</h:commandButton>
+				<h:commandButton 
+					value="STOP/BACK" 
+					actionListener="#{cueBean.back}"
+					style="width:100px; height:75px; background: #f00;"/>
+			</p:panel>
+			
+			<p:panel styleClass="playback" style="display:inline-block; vertical-align:top;">
+				<h:panelGrid columns="4">
+					<h:outputLabel class="title" value=""/>
+					<h:outputLabel class="title" value="Cue #"/>
+					<h:outputLabel class="title" value="Time"/>
+					<h:outputLabel class="title" value="Label"/>
+					
+					<h:outputLabel value="Last" styleClass="last" rendered="#{cueBean.lastCue != null}"/>
+					<h:outputLabel value="#{cueBean.lastCue.cueNumber}" styleClass="last" rendered="#{cueBean.lastCue != null}"/>
+					<h:outputLabel value="#{cueBean.lastCue.humanTime}" styleClass="last" rendered="#{cueBean.lastCue != null}"/>
+					<h:outputLabel value="#{cueBean.lastCue.label}" styleClass="last" rendered="#{cueBean.lastCue != null}"/>
+					
+					
+					<h:outputLabel value="Current" styleClass="active" rendered="#{cueBean.cue != null}"/>
+					<h:outputLabel value="#{cueBean.cue.cueNumber}" styleClass="active" rendered="#{cueBean.cue != null}"/>
+					<h:outputLabel value="#{cueBean.cue.humanTime}" styleClass="active" rendered="#{cueBean.cue != null}"/>
+					<h:outputLabel value="#{cueBean.cue.label}" styleClass="active" rendered="#{cueBean.cue != null}"/>
+					
+					<h:outputLabel value="Next" styleClass="next" rendered="#{cueBean.nextCue != null}"/>
+					<h:outputLabel value="#{cueBean.nextCue.cueNumber}" styleClass="next" rendered="#{cueBean.nextCue != null}"/>
+					<h:outputLabel value="#{cueBean.nextCue.humanTime}" styleClass="next" rendered="#{cueBean.nextCue != null}"/>
+					<h:outputLabel value="#{cueBean.nextCue.label}" styleClass="next" rendered="#{cueBean.nextCue != null}"/>
+					
+					<h:outputLabel value="No future cues..." rendered="#{cueBean.nextCue == null}"/>
+				</h:panelGrid>
+			</p:panel>
+			
+			<p:panel style="display:inline-block; vertical-align: top;">
+				<h2>Other Commands</h2>
+				<p:selectBooleanCheckbox value="#{cueBean.enableOut}" style="width: 200px;">
+					<p:outputLabel value="Enable Out"/>
+					<p:ajax process="@all"/>
+				</p:selectBooleanCheckbox>
+				<p:commandButton 
+					value="Goto Cue Out" 
+					actionListener="#{cueBean.gotoCueZero}" 
+					disabled="#{!cueBean.enableOut}"/>
+			</p:panel>
+		</div>
+		
+	</p:panel>
+	
+	
+</composite:implementation>
+
+</html>  

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:cues="http://java.sun.com/jsf/composite/cues"
+>
+	<h:body>
+		<ui:composition template="/template/layouts/one.xhtml">
+			<ui:define name="title">Welcome | Powered by Twitter Bootstrap</ui:define>
+			
+			<ui:define name="main">
+				<h:panelGroup rendered="#{not securityBean.loggedIn}">
+					<h1>Web Cue | Control Panel</h1>
+					<hr />
+					<h2>CUE: #{cueBean.edit.cueNumber} | #{cueBean.edit.label} </h2>
+					<h:form id="details">
+						<p:panel>
+							<h:panelGrid columns="2">
+								<h:outputLabel value="Cue #"/>
+								<p:inputText value="#{cueBean.edit.cueNumber}" style="width:50px"/>
+								
+								<h:outputLabel value="Up / Down"/>
+								<h:panelGroup>
+									<p:inputText value="#{cueBean.edit.timeSeconds}" style="width:40px" />
+									/
+									<p:inputText value="#{cueBean.edit.timeDownSeconds}" style="width:40px">
+										<f:convertNumber minFractionDigits="2" type="number" />
+									</p:inputText>
+								</h:panelGroup>
+								
+								<h:outputLabel value="Label" />
+								<p:inputText value="#{cueBean.edit.label}"/>
+							</h:panelGrid>
+						</p:panel>
+						<p:commandButton value="save" 
+						actionListener="#{cueBean.saveEdits}"/>
+						
+						<cues:levels levels="#{cueBean.editLevels}"/>
+					</h:form>
+
+				</h:panelGroup>
+			</ui:define>
+		</ui:composition>
+	</h:body>
+</html>

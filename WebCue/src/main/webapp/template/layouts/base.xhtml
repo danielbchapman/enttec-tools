@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:pe="http://primefaces.org/ui/extensions"	
+>
+	<h:head>
+		<ui:param name="root" value="#{request.contextPath}/" />
+		<f:facet name="first">
+		<!-- 
+			<h:outputScript library="primefaces" name="jquery/jquery.js" />
+			 -->
+			<script type="text/javascript" src="#{root}js/bootstrap.min.js"></script>			
+		</f:facet>
+		
+	    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+	    <!--[if lt IE 9]>
+	      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	    <![endif]-->
+	
+	    <!-- Le fav and touch icons -->
+	    <!-- 
+	    <link rel="shortcut icon" href="assets/ico/favicon.ico" />
+	     -->
+	    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/ico/apple-touch-icon-144-precomposed.png" />
+	    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png" />
+	    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png" />
+	    <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png" />		
+		<title>WebCue | <ui:insert name="title">500 - Template Server Error</ui:insert></title>
+		<style>
+		<ui:insert name="style">
+			body{
+				//padding-top: 60px;
+				//padding-botton: 40px;
+			}
+		</ui:insert>
+			.channel-status {
+				display:block;
+				background:#111;
+				border: 1px solid #444;
+				width: 50px;
+				height: 50px;
+				text-align: center;
+				vertical-align: middle;
+				font-size: 1.5em;
+			}
+			
+			.channel-status label.channel {
+				color: #ddd;
+				font-weight: bold;
+				height: 20px;
+				
+			}
+			
+			.channel-status label.level {
+				color: #f00;
+				font-weight: bold;
+				height:30px;
+			}
+			
+			.marked {
+				background: #983131
+			}
+		</style>
+		<link rel="stylesheet" href="#{root}css/bootstrap.css" />
+		<link rel="stylesheet" href="#{root}css/bootstrap-responsive.css" />
+	</h:head>
+	
+	<h:body>
+		<pe:ajaxErrorHandler />
+		<h:panelGroup rendered="#{!controlBean.connected}">
+			<div style="width:100%; height: 75px; background: orange;">
+				<h2 class="error">Unable to connect to DMX device, please check the connection.</h2>
+				<h:form>
+					<h:commandButton 
+						value="Connect"
+						actionListener="#{controlBean.connect}"
+					/>
+				</h:form>
+			</div>
+			
+		</h:panelGroup>
+		<ui:insert name="first">
+			<div>
+				<p>FIRST</p>
+			</div>
+		</ui:insert>
+		
+		<ui:insert name="middle">
+			<div>
+				<p>MIDDLE</p>
+			</div>
+		</ui:insert>
+		
+		<ui:insert name="last">
+			<div>
+				<p>LAST</p>
+			</div>
+		</ui:insert>
+	<h:outputScript library="js" name="utility.js" />
+	<script type="text/javascript">
+		(function(){
+			$(document).ready(function(){
+				$('.fade-in').fadeIn();
+				$('.fade-out').fadeOut();
+			});
+		})();
+	</script>	
+</h:body>
+</html>

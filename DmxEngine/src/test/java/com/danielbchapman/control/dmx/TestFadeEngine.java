@@ -75,7 +75,22 @@ public class TestFadeEngine
     int calc = engine.calculateLevel(go[0], testIndex, 0, 2500, 5000);// ~ 10;
     Assert.assertTrue("Assuming 10 ->" + calc + " using index -> " + testIndex, Utility.compareToNullSafe(10, calc) == 0);
     
+    ArrayList<Cue> stack = new ArrayList<>();
+    stack.add(a);
+    stack.add(b);
+    
+    Fade[] gotoCue = engine.createGotoCue(stack, channels, 2000);
     //Fire fades test
     engine.go(go);
+    try
+    {
+      Thread.sleep(3500);
+    }
+    catch (InterruptedException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    engine.go(gotoCue);
   }
 }
