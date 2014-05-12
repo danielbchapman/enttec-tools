@@ -185,6 +185,26 @@ public void setDMXChannel(int channel,  int  value, boolean flush){
     dmxMessage( WIDGET_SEND_PACKET, data );
     }
   }
+
+public void setDmxArray(Integer[] levels)
+{
+  int length = -1;
+  if(levels.length > universeSize)
+    length = universeSize;
+  else
+    length = levels.length;
+    
+  byte[] data = new byte[universeSize + 1];
+  data[0] = 0;//Command Byte
+  
+  for(int i = 0; i < length; i++) //null indicates don't set
+    if(levels[i] != null)
+      data[i] = levels[i].byteValue();
+    else
+      data[i] = channelValues[i];
+  
+  dmxMessage(WIDGET_SEND_PACKET, data);
+}
  
 /**
  * is the serial port open?
