@@ -1,12 +1,15 @@
 package com.danielbchapman.control.dmx;
 
+import java.io.Serializable;
+
 import com.lightassistant.utility.Utility;
 
 import lombok.Data;
 
 @Data
-public class Channel implements Comparable<Channel>, Cloneable
+public class Channel implements Comparable<Channel>, Cloneable, Serializable
 {
+  private static final long serialVersionUID = 1L;
   private int id;
   private String label;
   private Integer patch;

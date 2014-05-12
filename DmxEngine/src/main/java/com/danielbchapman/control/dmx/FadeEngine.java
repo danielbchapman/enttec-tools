@@ -1,10 +1,16 @@
 package com.danielbchapman.control.dmx;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import com.s5g.util.Dmx;
 
@@ -24,9 +30,13 @@ import com.s5g.util.Dmx;
 
 public class FadeEngine
 {
+  @Setter
+  @Getter
   private Dmx dmx;
   private int[] snapshot = new int[512];
   private Fade[] activeFades = new Fade[512];
+  private boolean programmerActive = false;
+  private Integer[] programmer = new Integer[512];
 
   public FadeEngine()
   {
@@ -39,23 +49,114 @@ public class FadeEngine
 
   }
 
+  public void programmer(Integer[] levels)
+  {
+    programmerActive = true;
+    commit(levels, null);
+  }
+  
+  public void clearProgrammer()
+  {
+    programmerActive = false;
+    programmer = new Integer[512];
+  }
+  
+  public int[] getStatus()
+  {
+    int[] copy = new int[snapshot.length];
+    for(int i = 0; i < copy.length; i++)
+      copy[i] = snapshot[i];
+    
+    return copy;
+  }
+  public Integer[] getProgrammer()
+  {
+    Integer[] copy = new Integer[programmer.length];
+    for(int i = 0; i < copy.length; i++)
+      copy[i] = programmer[i];
+    return copy;
+  }
+  
   /**
    * Write this array to the DMX, if a value is null it will be ignored
    * 
    * @param newLevels an array containing MOVES in the Data. Nulls will be ignored.  
    * 
    */
-  public void commit(Integer[] newLevels)
+  public void commit(Integer[] newLevels, Fade fade) //the fade is to track for debugging..
   {
+    Integer[] send = new Integer[snapshot.length];
     StringBuilder x = new StringBuilder();
-    x.append("Committing array to DMX\n");
+    x.append("Committing array to DMX | FADE: " + fade.getName() +"\n");
     for(int i = 0; i < newLevels.length; i++)
       if(newLevels[i] != null)
+      {
+        snapshot[i] = newLevels[i];
         x.append("\t[" + i + "]@" + newLevels[i]);
+      }
+
+    for(int i = 0; i < snapshot.length; i++)
+      send[i] = snapshot[i];
+    
+    if(dmx != null && dmx.isOpen())
+    {
+      dmx.setDmxArray(send);
+    }
     
     System.out.println(x.toString());
+    System.out.println(dmx.printData());
   }
 
+  public Fade[] createGotoCue(List<Cue> stack, Collection<Channel> allChannels, long time)
+  {
+    //IF there is an unused channel this won't affect its level!
+    HashMap<Channel, Level> current = new HashMap<>();
+    
+    //Zero out...
+    for(Channel c : allChannels)
+    {
+      current.put(c, new Level(0, time));
+    }
+    
+    for(Cue cue : stack)
+    {
+      for(Channel c : cue.getLevels().keySet())
+      {
+        Level to = cue.getLevels().get(c);
+        if(to != null && to.getLevel() != null)
+        {
+          current.put(c, to);
+        }
+      }
+    }
+    
+    ArrayList<Channel> chan = new ArrayList<>();
+    ArrayList<Level> level = new ArrayList<>();
+
+    for(Channel c : current.keySet())
+    {
+      chan.add(c);
+      level.add(current.get(c));
+    }
+
+    if(chan.size() != level.size())
+      throw new IllegalArgumentException("Channel and level size must match!");
+    
+    Channel[] channels = new Channel[chan.size()];
+    Level[] levels = new Level[level.size()];
+
+    for(int i = 0; i < chan.size(); i++)
+    {
+      channels[i] = chan.get(i);
+      levels[i] = level.get(i);
+    }
+    
+    //Use only cue time for now, eventually do multi-part fades   
+    Fade fade = new Fade(channels, levels, time);
+    fade.setName("Goto Cue #" + stack.get(stack.size() -1 ).getCueNumber());
+    return new Fade[]{fade};
+  }
+  
   public Fade[] createFades(Cue cue)
   {
     cue.getLevels();
@@ -81,6 +182,7 @@ public class FadeEngine
     }
     //Use only cue time for now, eventually do multi-part fades   
     Fade fade = new Fade(channels, levels, cue.getTime());
+    fade.setName("Cue #" + cue.getCueNumber());
     return new Fade[]{fade};
   }
 
@@ -92,10 +194,12 @@ public class FadeEngine
     {
       for(int i = 0; i < f.getChannels().length; i++)
       {
-        if(f.getLevels()[i].getLevel() == null && f.getChannels()[i].isPatched())
+        if(f.getLevels()[i].getLevel() == null || !f.getChannels()[i].isPatched())
           continue; //no level
 
-        activeFades[f.getChannels()[i].getPatch()] = f;
+        Channel ch = f.getChannels()[i];
+        Integer index = ch.getPatch();
+        activeFades[index] = f;
       }
     }
   }
@@ -189,10 +293,15 @@ public class FadeEngine
         {
           if(patch[i] == null)
             continue;
+          if(activeFades[patch[i]] != fade)
+          {
+            update[patch[i]] = null;
+            continue;
+          }
           update[patch[i]] = engine.calculateLevel(fade, i, original[i], elapsed, fade.getTime());
         }
         
-        commit(update);
+        commit(update, fade);
       }
     }
   }

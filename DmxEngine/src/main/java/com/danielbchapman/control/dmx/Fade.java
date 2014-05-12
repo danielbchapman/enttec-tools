@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class Fade
 {
+  private String name;
   private Channel[] channels;
   private Level[] levels;
   int[] fadeStart;
