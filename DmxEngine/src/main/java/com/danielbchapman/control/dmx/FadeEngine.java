@@ -30,6 +30,14 @@ import com.s5g.util.Dmx;
 
 public class FadeEngine
 {
+  public static int MILLISECOND_REPEAT = 10;
+  private ScheduledExecutorService timer =  Executors.newScheduledThreadPool(8);
+  
+  @Override
+  protected void finalize() throws Throwable
+  {
+    timer.awaitTermination(1, TimeUnit.MINUTES);
+  }
   @Setter
   @Getter
   private Dmx dmx;
@@ -102,9 +110,12 @@ public class FadeEngine
     {
       dmx.setDmxArray(send);
     }
+    else 
+    {
+      System.out.println(x.toString());  
+    }
     
-    System.out.println(x.toString());
-    System.out.println(dmx.printData());
+    //System.out.println(dmx.printData());
   }
 
   public Fade[] createGotoCue(List<Cue> stack, Collection<Channel> allChannels, long time)
@@ -160,30 +171,61 @@ public class FadeEngine
   public Fade[] createFades(Cue cue)
   {
     cue.getLevels();
-    ArrayList<Channel> chan = new ArrayList<>();
-    ArrayList<Level> level = new ArrayList<>();
-
+    ArrayList<Channel> chanUp = new ArrayList<>();
+    ArrayList<Level> levelUp = new ArrayList<>();
+    ArrayList<Channel> chanDown = new ArrayList<>();
+    ArrayList<Level> levelDown = new ArrayList<>();
+    
     for(Channel c : cue.getLevels().keySet())
     {
-      chan.add(c);
-      level.add(cue.getLevels().get(c));
+      if(c.isPatched())
+      {
+        int current = snapshot[c.getPatch()];
+        Level level = cue.getLevels().get(c);
+        if(level != null && level.getLevel() != null)
+        {
+          if(current < level.getLevel())
+          {
+            chanUp.add(c);
+            levelUp.add(level);
+          }
+          else
+          {
+            chanDown.add(c);
+            levelDown.add(level);
+          }
+        }
+      }
     }
+//
+//    if(chan.size() != level.size())
+//      throw new IllegalArgumentException("Channel and level size must match!");
 
-    if(chan.size() != level.size())
-      throw new IllegalArgumentException("Channel and level size must match!");
+    Channel[] channelsUp = new Channel[chanUp.size()];
+    Channel[] channelsDown = new Channel[chanDown.size()];
+    Level[] levelsUp = new Level[levelUp.size()];
+    Level[] levelsDown = new Level[levelDown.size()];
 
-    Channel[] channels = new Channel[chan.size()];
-    Level[] levels = new Level[level.size()];
-
-    for(int i = 0; i < chan.size(); i++)
+    for(int i = 0; i < chanUp.size(); i++)
     {
-      channels[i] = chan.get(i);
-      levels[i] = level.get(i);
+      channelsUp[i] = chanUp.get(i);
+      levelsUp[i] = levelUp.get(i);
+    }
+    
+    for(int i = 0; i < chanDown.size(); i++)
+    {
+      channelsDown[i] = chanDown.get(i);
+      levelsDown[i] = levelDown.get(i);
     }
     //Use only cue time for now, eventually do multi-part fades   
-    Fade fade = new Fade(channels, levels, cue.getTime());
-    fade.setName("Cue #" + cue.getCueNumber());
-    return new Fade[]{fade};
+    Fade up = new Fade(channelsUp, levelsUp, cue.getTimeMils());
+    up.setName("Cue #" + cue.getCueNumber() + " [up]");
+    up.setInitialDelay(cue.getDelayUpMils());
+    
+    Fade down = new Fade(channelsDown, levelsDown, cue.getTimeDownMils());
+    down.setName("Cue #" + cue.getCueNumber() + " [down]");
+    down.setInitialDelay(cue.getDelayDownMils());
+    return new Fade[]{up, down};
   }
 
   //Separated for testing purposes...
@@ -204,7 +246,8 @@ public class FadeEngine
     }
   }
 
-  public void go(Fade[] fades)
+  @SuppressWarnings("unchecked")
+  public void executeFades(Fade[] fades)
   {
     prepareFade(fades);
 
@@ -214,9 +257,7 @@ public class FadeEngine
       FadeThread fader = new FadeThread();
       fader.engine = this;
       fader.fade = fades[i];
-      ScheduledExecutorService timer =  Executors.newScheduledThreadPool(1);
-
-      future = (ScheduledFuture<FadeThread>) timer.scheduleAtFixedRate(fader, 0, 10, TimeUnit.MILLISECONDS);
+      future = (ScheduledFuture<FadeThread>) timer.scheduleAtFixedRate(fader, 0, MILLISECOND_REPEAT, TimeUnit.MILLISECONDS);
       fader.end = future;  
     }
 
@@ -277,15 +318,28 @@ public class FadeEngine
             original[i] = engine.snapshot[patch[i]];
         }
       }
-
+      
       long elapsed = System.currentTimeMillis() - startTime;
       if(elapsed >= fade.getTime())
       {
-        //Force snapshop
-        
+        //Force snapshot;
         end.cancel(true);
+        
+        for(int i = 0; i < channels.length; i++)
+        {
+          if(patch[i] == null)
+            continue;
+          if(activeFades[patch[i]] != fade)
+          {
+            update[patch[i]] = null;
+            continue;
+          }
+          update[patch[i]] = targets[i];//engine.calculateLevel(fade, i, original[i], elapsed, fade.getTime());
+        }
+        
+        commit(update, fade);
         double stepsPerSecond = count/(double)((double) fade.getTime()/ (double)1000);
-        System.out.println("[FORCE FADE] There were " + count + " steps for a rate of " + stepsPerSecond + "Hz refresh | Cue time was: " + fade.getTime());
+        System.out.println("[FORCE FADE " + fade.getName() + "] There were " + count + " steps for a rate of " + stepsPerSecond + "Hz refresh | Cue time was: " + fade.getTime());
       }
       else
       {

@@ -2,6 +2,7 @@ package com.danielbchapman.control.dmx;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,6 +17,23 @@ import com.lightassistant.utility.Safe;
 public class Cue implements Comparable<Cue>, Serializable, Cloneable
 {
   private static final long serialVersionUID = 1L;
+  
+  @Getter
+  @Setter
+  private BigDecimal delayUp = BigDecimal.ZERO;
+  @Getter
+  @Setter
+  private BigDecimal delayDown = BigDecimal.ZERO;;
+  /**
+   * The follow property is symbolic and the engine (which does not maintain the stack)
+   * is unable to use this, it is for the user to execute and schedule auto-follows. 
+   */
+  @Getter
+  private BigDecimal follow;
+  public void setFollow(BigDecimal dec)
+  {
+    follow = dec;
+  }
   @Getter
   @Setter
   private String label;
@@ -27,10 +45,10 @@ public class Cue implements Comparable<Cue>, Serializable, Cloneable
   private HashMap<Channel, Level> levels = new HashMap<Channel, Level>();
   @Getter
   @Setter
-  private Long time = Long.valueOf(4900);
+  private BigDecimal time = new BigDecimal(4.9);
   @Getter
   @Setter
-  private Long downTime;
+  private BigDecimal downTime = null;
   
   public Cue(BigDecimal id)
   {
@@ -66,7 +84,7 @@ public class Cue implements Comparable<Cue>, Serializable, Cloneable
   public String toString()
   {
     StringBuilder build = new StringBuilder();
-    build.append("Cue number [" + getCueNumber() + "] TIME: " + (double) time/1000 + "s\n");
+    build.append("Cue number [" + getCueNumber() + "] TIME: " + time + "s\n");
     ArrayList<Channel> keys = new ArrayList<>();
     for(Channel c : levels.keySet())
     {
@@ -90,10 +108,20 @@ public class Cue implements Comparable<Cue>, Serializable, Cloneable
   
   public String getHumanTime()
   {
+    DecimalFormat nf = new DecimalFormat("##0.##");
     if(downTime != null)
-      return time + "/" + downTime;
+      return nf.format(getTime()) + "/" + getTimeDownSeconds();
     else
-      return time.toString();
+      return nf.format(getTime());
+  }
+  
+  public String getHumanDelay()
+  {
+    DecimalFormat nf = new DecimalFormat("##0.##");
+    if(downTime != null)
+      return nf.format(getDelayUp()) + "/" + nf.format(getDelayDown());
+    else
+      return nf.format(getDelayUp());
   }
   
   public Cue clone()
@@ -111,26 +139,14 @@ public class Cue implements Comparable<Cue>, Serializable, Cloneable
     return copy;
   }
   
-  public double getTimeSeconds()
-  {
-    return Double.valueOf(time) / 1000.0D;
-  }
-  
-  public void setTimeSeconds(double x)
-  {
-    if(x < 0)
-      x = 0;
-    time = Double.valueOf(x * 1000.0D).longValue();
-  }
-  
   public String getTimeDownSeconds()
   {
     if(downTime == null)
       return null;
-    return Double.valueOf(downTime / 1000.0D).toString();
+    return downTime.toString();
   }
   
-  public void setTimeDownSeconds(String time)
+  public void setTimeDownSeconds(String time) //allow nulls JSF Conversion bug
   {
 
     BigDecimal parse = Safe.parseBigDecimal(time);
@@ -140,6 +156,30 @@ public class Cue implements Comparable<Cue>, Serializable, Cloneable
       return;
     }
   
-    downTime = Double.valueOf(parse.doubleValue() * 1000D).longValue();
+    downTime = parse;
+  }
+  
+  public long getDelayUpMils()
+  {
+    return getDelayUp().multiply(new BigDecimal(1000)).longValue();
+  }
+  
+  public long getDelayDownMils()
+  {
+
+    return getDelayDown().multiply(new BigDecimal(1000)).longValue();
+  }
+  
+  public long getTimeMils()
+  {
+    return getTime().multiply(new BigDecimal(1000)).longValue();
+  }
+  
+  public long getTimeDownMils()
+  {
+    if(downTime == null)
+      return getTimeMils();
+    else
+      return getDownTime().multiply(new BigDecimal(1000)).longValue();
   }
 }

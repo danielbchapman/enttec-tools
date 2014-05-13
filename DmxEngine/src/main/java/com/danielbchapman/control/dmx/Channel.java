@@ -42,6 +42,27 @@ public class Channel implements Comparable<Channel>, Cloneable, Serializable
     return Utility.compareToNullSafe(this.id, other.id);
   }
   
+  //Handle human offset
+  public void setPatch(Integer i)
+  {
+    if(i == null)
+      patch = null;
+    else
+    {
+      patch = i - 1;
+      if(patch < 0)
+        patch = null;
+    }
+  }
+  
+  public Integer getPatch()
+  {
+    if(patch == null)
+      return null;
+    
+    return patch + 1;
+  }
+  
   public Channel clone()
   {
     Channel copy = new Channel();
