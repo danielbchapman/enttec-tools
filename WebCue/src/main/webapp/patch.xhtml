@@ -28,8 +28,12 @@
 							</p:column>
 							<p:column headerText="Address">
 								<p:cellEditor>
-				                   <f:facet name="output"><h:outputText value="#{channel.patch}" /></f:facet>
-				                   <f:facet name="input"><p:inputText value="#{channel.patch}" style="width:96%"/></f:facet>
+			                   		<f:facet name="output"><h:outputText value="#{channel.patch}" /></f:facet>
+				                   	<f:facet name="input">
+										<p:inputText value="#{channel.patch}" style="width:96%">
+											<f:convertNumber integerOnly="true"/>
+         								</p:inputText>
+				                   	</f:facet>
 			               		</p:cellEditor>
 							</p:column>
 							<p:column headerText="Label">

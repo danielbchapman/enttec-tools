@@ -15,7 +15,7 @@
 					<h:form id="cue_list">
 						<cues:cueControls />
 						<p:panel>
-							<p:inputText value="cueNumber" placeholder="Cue Number"/>
+							<p:inputText value="#{cueBean.addCueNumber}" placeholder="Cue Number"/>
 							<p:commandButton 
 								value="Add Cue"
 								actionListener="#{cueBean.addCue}" 
@@ -32,7 +32,43 @@
 						</p:panel>
 						<p:dataTable value="#{cueBean.stack}" var="cue" id="cue_stack">
 							<p:column headerText="Cue #" width="50">
-								#{cue.cueNumber}
+								<h:outputText value="#{cue.cueNumber}">
+									<f:converter converterId="com.danielbchapman.web.converters.BigDecimalConverter"/>
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Up" width="25">
+								<h:outputText value="#{cue.time}">
+									<f:converter converterId="com.danielbchapman.web.converters.BigDecimalConverter"/>
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Down" width="25">
+								<h:outputText value="#{cue.downTime}">
+									<f:converter converterId="com.danielbchapman.web.converters.BigDecimalConverter"/>
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Follow" width="25">
+								<h:outputText value="#{cue.follow}">
+									<f:converter converterId="com.danielbchapman.web.converters.BigDecimalConverter"/>
+								</h:outputText>
+									
+							</p:column>
+							
+							<p:column headerText="Delay Up" width="25">
+								<h:outputText value="#{cue.delayUp}">
+									<f:converter converterId="com.danielbchapman.web.converters.BigDecimalConverter"/>
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Down" width="25">
+								<h:outputText value="#{cue.delayDown}">
+									<f:converter converterId="com.danielbchapman.web.converters.BigDecimalConverter"/>
+								</h:outputText>
+							</p:column>			
+							<p:column headerText="Time">
+								#{cue.humanTime}
 							</p:column>
 							
 							<p:column width="250" headerText="Label">

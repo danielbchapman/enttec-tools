@@ -33,6 +33,19 @@
 						<br />
 					</ui:repeat>
 				</h:form>
+				
+				<h:form id="status">
+					<p:commandButton value="Refresh" actionListener="#{controlBean.refreshDmx}" update=":status"></p:commandButton>
+					<div style="width:600px; background: #444">
+						<ui:repeat value="#{controlBean.dmxStatus}" var="dmx" varStatus="status">
+							<div style="display:inline-block; background: #111; text-align: center; width: 25px; padding:5px; margin:2px;">
+								<label style="color: red">#{status.index + 1}</label>
+								<label style="color: green">#{dmx}</label>
+							</div>
+						</ui:repeat>
+					</div>
+					
+				</h:form>
 			</ui:define>
 		</ui:composition>
 	</h:body>

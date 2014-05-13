@@ -21,14 +21,31 @@
 								<h:outputLabel value="Cue #"/>
 								<p:inputText value="#{cueBean.edit.cueNumber}" style="width:50px"/>
 								
+
 								<h:outputLabel value="Up / Down"/>
-								<h:panelGroup>
-									<p:inputText value="#{cueBean.edit.timeSeconds}" style="width:40px" />
+								<h:panelGroup>		
+									<p:inputText value="#{cueBean.edit.time}" style="width:40px" />
 									/
 									<p:inputText value="#{cueBean.edit.timeDownSeconds}" style="width:40px">
 										<f:convertNumber minFractionDigits="2" type="number" />
 									</p:inputText>
 								</h:panelGroup>
+								
+								<h:outputLabel value="Deplay Up / Down"/>
+								<h:panelGroup>
+									<p:inputText value="#{cueBean.edit.delayUp}" style="width:40px">
+										<f:converter converterId="com.danielbchapman.web.converters.BigDecimalConverter"/>
+									</p:inputText>
+									/
+									<p:inputText value="#{cueBean.edit.delayDown}" style="width:40px">
+										<f:converter converterId="com.danielbchapman.web.converters.BigDecimalConverter"/>
+									</p:inputText>
+								</h:panelGroup>
+								
+								<h:outputLabel value="Follow" />
+								<p:inputText value="#{cueBean.editFollow}" >
+									<f:converter converterId="com.danielbchapman.web.converters.BigDecimalConverter"/>
+								</p:inputText>
 								
 								<h:outputLabel value="Label" />
 								<p:inputText value="#{cueBean.edit.label}"/>

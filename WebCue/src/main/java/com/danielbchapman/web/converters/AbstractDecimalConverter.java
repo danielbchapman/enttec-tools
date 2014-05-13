@@ -31,7 +31,9 @@ public abstract class AbstractDecimalConverter implements Converter
 			String message = Internationalization.getMessage(AbstractDecimalConverter.class, "error.message", value);
 			FacesMessage msg = new FacesMessage(error, message);
 			msg.setSeverity(FacesMessage.SEVERITY_ERROR);
-			throw new ConverterException(msg);
+			//throw new ConverterException(msg);
+			System.out.println("Conversion aborted for " + value);
+			
 		}
 
 		return result;

@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
@@ -24,6 +28,7 @@ import com.danielbchapman.control.dmx.Cue;
 import com.danielbchapman.control.dmx.Fade;
 import com.danielbchapman.control.dmx.FadeEngine;
 import com.danielbchapman.control.dmx.Level;
+import com.danielbchapman.control.dmx.FadeEngine.FadeThread;
 import com.danielbchapman.groups.Group;
 import com.danielbchapman.groups.Groups;
 import com.danielbchapman.groups.Groups.GroupFormatException;
@@ -51,6 +56,7 @@ import com.s5g.util.Dmx;
  */
 public class CueStack
 {
+  public final static ScheduledExecutorService timer = Executors.newScheduledThreadPool(1);
   public final static String GROUP_CUES = "cues";
   public final static String GROUP_CHANNELS = "channels";
   public static String rootDir = "C:/WebCue/";
@@ -60,8 +66,12 @@ public class CueStack
   static ArrayList<Cue> CUES = new ArrayList<>();
   static ArrayList<Channel> CHANNELS = new ArrayList<Channel>();
   static int CURRENT_CUE = -1;
-  public static long DEFAULT_TIME = 2000;
+  public static BigDecimal DEFAULT_TIME = new BigDecimal(4.9);
   
+  private static long defaultTimeLong()
+  {
+    return DEFAULT_TIME.multiply(new BigDecimal(1000)).longValue();
+  }
   static {
     Item info = new Item();
     info.setValue("version", "0.0.1 - Cymbeline");
@@ -121,8 +131,9 @@ public class CueStack
     return true;
   }
   
-  private static synchronized void goIndex(int index)
+  private static int nextIndex(int index)
   {
+    index++;
     //Fade here
     if(index >= CUES.size())
       index = CUES.size() -1;
@@ -131,19 +142,40 @@ public class CueStack
     if(index <= 0)
       index = 0;
     
-    CURRENT_CUE = index;
-    
-    
+    return index;
   }
   
+  private static int lastIndex(int index)
+  {
+    index--;
+    //Fade here
+    if(index >= CUES.size())
+      index = CUES.size() -1;
+    
+    
+    if(index <= 0)
+      index = 0;
+    
+    return index;
+  }
+  
+  private static synchronized void goIndex(int index)
+  {
+    CURRENT_CUE = nextIndex(index); 
+  }
+  
+  private static synchronized void backIndex(int index)
+  {
+    CURRENT_CUE = lastIndex(index);
+  }
   public static Cue addCue()
   {
     return null;
   }
   
-  public static Cue deleteCue(Cue cue)
+  public static void deleteCue(Cue cue)
   {
-    return null;
+    CUES.remove(cue);
   }
   
   public static void gotoCueZero()
@@ -158,19 +190,53 @@ public class CueStack
     zero.setLevels(out);
     zero.setTime(DEFAULT_TIME);
     Fade[] none = FADE.createFades(zero);
-    FADE.go(none);
+    FADE.executeFades(none);
     
+    CURRENT_CUE = 0;
   }
+  
+  private static void go(Cue cue)
+  {   
+    Fade[] fades = FADE.createFades(CUES.get(CURRENT_CUE));
+    if(cue.getFollow() != null)
+    {
+      final int nextIndex = nextIndex(CURRENT_CUE); //This forces the go.
+      final Cue next = CUES.get(nextIndex);
+      if(next != cue)
+      {
+        Runnable follow = new Runnable()
+        {
+
+          @Override
+          public void run()
+          {
+            if(CURRENT_CUE > nextIndex)
+              return;
+            else
+              CURRENT_CUE = nextIndex;
+            
+            go(next);
+          }
+          
+        };
+        Long mils = cue.getFollow().multiply(new BigDecimal(1000)).longValue();
+        timer.schedule(follow, mils, TimeUnit.MILLISECONDS);  
+      }      
+    }
+    FADE.executeFades(fades);    
+  }
+  
   public static void go()
   {
-    goIndex(++CURRENT_CUE);
-    Fade[] go = FADE.createFades(CUES.get(CURRENT_CUE));
-    FADE.go(go);
+    goIndex(CURRENT_CUE);
+    Cue source = CUES.get(CURRENT_CUE);
+    go(source);
+
   }
   
   public static void back()
   {
-    goIndex(--CURRENT_CUE);
+    backIndex(CURRENT_CUE);
     //FIXME implement...
   }
   public static void gotoCue(Cue cue)
@@ -190,8 +256,8 @@ public class CueStack
     }
     
     CURRENT_CUE = index;
-    Fade[] go = FADE.createGotoCue(stack, CHANNELS, DEFAULT_TIME);
-    FADE.go(go);
+    Fade[] go = FADE.createGotoCue(stack, CHANNELS, defaultTimeLong());
+    FADE.executeFades(go);
   }
   public static synchronized void save(String name)
   {
@@ -218,8 +284,12 @@ public class CueStack
       {
         Item cue = new Item();
         cue.setValue("NUMBER", c.getCueNumber());
-        cue.setValue("UP", c.getCueNumber());
-        cue.setValue("DOWN", c.getCueNumber());
+        cue.setValue("UP", c.getTime());
+        cue.setValue("DOWN", c.getDownTime());
+        cue.setValue("DELAY_UP", c.getDelayUp());
+        cue.setValue("DELAY_DOWN", c.getDelayDown());
+        cue.setValue("FOLLOW", c.getFollow());
+        cue.setValue("LABEL", c.getLabel());
         
         for(Channel ch: c.getLevels().keySet())
         {
@@ -307,8 +377,13 @@ public class CueStack
     for(Item i : cues.sort("NUMBER"))
     {
       Cue cue = new Cue(new BigDecimal(i.string("NUMBER")));
-      cue.setDownTime(Long.valueOf(i.integer("DOWN")));
-      cue.setTime(Long.valueOf(i.integer("UP")));
+      cue.setDownTime(i.bigDecimal("DOWN"));
+      cue.setTime(i.bigDecimal("UP", DEFAULT_TIME));
+      cue.setDelayUp(i.bigDecimal("DELAY_UP", BigDecimal.ZERO));
+      cue.setDelayDown(i.bigDecimal("DELAY_DOWN", BigDecimal.ZERO));
+      cue.setFollow(i.bigDecimal("FOLLOW"));
+      cue.setLabel(i.string("LABEL"));
+      
       HashMap<Channel, Level> levels = new HashMap<>();
       Map<String, JSON> fields = i.getValues();
       for(String x : fields.keySet())
@@ -435,5 +510,22 @@ public class CueStack
   public static void updateCue(Cue cue, HashMap<Channel, Level> levels)
   {
     throw new RuntimeException("Not implemented!!!....");
+  }
+  
+  public static void deleteCue(BigDecimal id)
+  {
+    Cue cue = find(id);
+    if(cue != null)
+      CUES.remove(cue);
+  }
+  
+  public static Integer[] getDmxStatus()
+  {
+    if(isOpen())
+    {
+      return DMX.getDmxStatus();
+    }
+    else
+      return null;
   }
 }

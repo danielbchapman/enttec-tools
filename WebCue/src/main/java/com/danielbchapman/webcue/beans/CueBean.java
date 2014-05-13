@@ -17,6 +17,7 @@ import com.danielbchapman.code.Pair;
 import com.danielbchapman.control.dmx.Channel;
 import com.danielbchapman.control.dmx.Cue;
 import com.danielbchapman.control.dmx.Level;
+import com.danielbchapman.web.converters.BigDecimalConverter;
 import com.danielbchapman.web.utility.Safe;
 import com.danielbchapman.web.utility.WebUtil;
 
@@ -44,6 +45,11 @@ public class CueBean implements Serializable
   @Getter
   @Setter
   Cue edit;
+  
+  @Getter
+  @Setter
+  String editFollow;
+ 
   @Getter
   @Setter
   private BigDecimal gotoCueNumber;
@@ -105,6 +111,7 @@ public class CueBean implements Serializable
     {
       edit = cue.clone();
       editLevels = createLevels(edit); 
+      editFollow = cue.getFollow() == null ? "" : cue.getFollow().toString();
       if(route != null)
         WebUtil.redirect(route);
     }
@@ -214,6 +221,8 @@ public class CueBean implements Serializable
   {
     if(edit != null)
     {
+      BigDecimal follow = Safe.parseBigDecimal(editFollow);
+      edit.setFollow(follow);
       if(editLevels != null)
       {
         HashMap<Channel, Level> updated = new HashMap<>();
@@ -242,7 +251,6 @@ public class CueBean implements Serializable
   
   public static int toDmx(double percent)
   {
-    
     double convert = percent / 100.00 * 255.00;
     int out = Double.valueOf(convert).intValue();
 //    System.out.println("Input ->" + percent + " output ->" + out);
@@ -263,5 +271,15 @@ public class CueBean implements Serializable
     Cue add = new Cue(decimal);
     CueStack.recordCue(add);
     editCue(add, "/live.xhtml");
+  }
+  
+  public void doDelete(ActionEvent evt)
+  {
+    BigDecimal cueNumber = (BigDecimal) evt.getComponent().getAttributes().get("cueNumber");
+    if(cueNumber != null)
+    {
+      Cue cue = CueStack.find(cueNumber);
+      CueStack.deleteCue(cue);
+    }
   }
 }

@@ -40,6 +40,10 @@ public class ControlBean implements Serializable
     WebUtil.redirect("/cues.xhtml");
   }
   
+  public Integer[] getDmxStatus()
+  {
+    return CueStack.getDmxStatus();
+  }
   public void loadShow(ActionEvent evt) throws FileNotFoundException, ParserConfigurationException, GroupFormatException, SAXException, IOException
   {
     String showFile = (String) evt.getComponent().getAttributes().get("showFile");
@@ -61,5 +65,9 @@ public class ControlBean implements Serializable
   {
     if(!CueStack.connect())
       throw new IllegalStateException("Could not connect to Enttec device");
+  }
+  
+  public void refreshDmx(ActionEvent evt)
+  {
   }
 }
