@@ -35,6 +35,9 @@ public class CueBean implements Serializable
   
   @Getter
   @Setter
+  private boolean hideUnpatched = true;
+  @Getter
+  @Setter
   private boolean enableOut;
   
   @Getter
@@ -175,8 +178,12 @@ public class CueBean implements Serializable
       Double val = null;
       if(p.getTwo() != null)
         val = toPercent(p.getTwo());
-      editLevels.get(editLevels.size() - 1).add(Pair.create(p.getOne().clone(), val));
-      count++;
+      
+      if(p.getOne().isPatched() || val != null) //If this channel has a level or is patched...
+      {
+        editLevels.get(editLevels.size() - 1).add(Pair.create(p.getOne().clone(), val));
+        count++;  
+      }
     }
     
     return editLevels;
