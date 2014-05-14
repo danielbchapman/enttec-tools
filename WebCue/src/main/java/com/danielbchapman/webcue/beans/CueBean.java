@@ -2,8 +2,8 @@ package com.danielbchapman.webcue.beans;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 
 import javax.faces.bean.ManagedBean;
@@ -17,7 +17,6 @@ import com.danielbchapman.code.Pair;
 import com.danielbchapman.control.dmx.Channel;
 import com.danielbchapman.control.dmx.Cue;
 import com.danielbchapman.control.dmx.Level;
-import com.danielbchapman.web.converters.BigDecimalConverter;
 import com.danielbchapman.web.utility.Safe;
 import com.danielbchapman.web.utility.WebUtil;
 
@@ -190,26 +189,40 @@ public class CueBean implements Serializable
   
   public String getChannelOutput(ArrayList<Pair<Channel, Integer>> status)
   {
+    return getChannelOutput(status, true);
+  }
+  
+  public String getChannelOutput(ArrayList<Pair<Channel, Integer>> status, boolean flexible)
+  {
     StringBuilder out = new StringBuilder();
     
     out.append("<table>");
     out.append("<tbody>");
     out.append("<tr>");
+    
+    DecimalFormat df = new DecimalFormat("00.#");
+    
+    int count = 0;
     for(int i = 0; i < status.size(); i++)
     {
       Pair<Channel, Integer> el = status.get(i);
+      if(flexible && !el.getOne().isPatched())
+        continue; //skip unpatched.
+      
       out.append("<td>");
       out.append("<div class=\"channel-status\">");
       out.append("<label class=\"channel\">");
       out.append(el.getOne().getId());
       out.append("</label>");
       out.append("<label class=\"level\">");
-      out.append(el.getTwo() == null ? "" : toPercent(el.getTwo()));
+      out.append(el.getTwo() == null ? "" : df.format(toPercent(el.getTwo())));
       out.append("</label>");
       out.append("</div>");
       out.append("</td>");
-      if(((i + 1) % 10) == 0)
+      if(((count + 1) % 10) == 0)
         out.append("</tr>\n<tr>");
+      
+      count++;
     }
     out.append("</tr>");;
     out.append("</tbody>");

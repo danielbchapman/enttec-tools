@@ -104,6 +104,14 @@ public void getParameters(){
   dmxMessage(WIDGET_GET_PARAMETERS, data);	
   }
 
+public Integer[] getDmxStatus()
+{
+  Integer[] values = new Integer[channelValues.length];
+  for(int i = 0; i < channelValues.length; i++)
+    values[i] = (int) channelValues[i];
+  
+  return values;
+}
 public String printData()
 {
   StringBuilder x = new StringBuilder();

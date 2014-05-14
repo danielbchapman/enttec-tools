@@ -81,7 +81,7 @@ public class TestFadeEngine
     
     Fade[] gotoCue = engine.createGotoCue(stack, channels, 2000);
     //Fire fades test
-    engine.go(go);
+    engine.executeFades(go);
     try
     {
       Thread.sleep(3500);
@@ -91,6 +91,6 @@ public class TestFadeEngine
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    engine.go(gotoCue);
+    engine.executeFades(gotoCue);
   }
 }

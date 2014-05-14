@@ -237,7 +237,8 @@ public class CueStack
   public static void back()
   {
     backIndex(CURRENT_CUE);
-    //FIXME implement...
+    Cue last = CUES.get(CURRENT_CUE);
+    gotoCue(last);
   }
   public static void gotoCue(Cue cue)
   {

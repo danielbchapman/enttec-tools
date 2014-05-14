@@ -130,6 +130,9 @@ public class Cue implements Comparable<Cue>, Serializable, Cloneable
     copy.label = label;
     copy.downTime = downTime;
     copy.time = time;
+    copy.follow = follow;
+    copy.delayDown = delayDown;
+    copy.delayUp = delayUp;
     
     HashMap<Channel, Level> tmp = new HashMap<>();
     for(Channel c : levels.keySet())
