@@ -61,11 +61,11 @@ public class CueStack
   public final static String GROUP_CHANNELS = "channels";
   public static String rootDir = "C:/WebCue/";
   
-  static FadeEngine FADE = new FadeEngine();
-  static Dmx DMX;
-  static ArrayList<Cue> CUES = new ArrayList<>();
-  static ArrayList<Channel> CHANNELS = new ArrayList<Channel>();
-  static int CURRENT_CUE = -1;
+  static public FadeEngine FADE = new FadeEngine();
+  static public Dmx DMX;
+  static public ArrayList<Cue> CUES = new ArrayList<>();
+  static public ArrayList<Channel> CHANNELS = new ArrayList<Channel>();
+  static public int CURRENT_CUE = -1;
   public static BigDecimal DEFAULT_TIME = new BigDecimal(4.9);
   
   private static long defaultTimeLong()

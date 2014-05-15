@@ -99,7 +99,7 @@ public class Cue implements Comparable<Cue>, Serializable, Cloneable
       if(l == null)
         build.append("\t(" + c.getId() + ")@????");
       else
-        build.append("\t(" + c.getId() + ")@" + l.getLevel());
+        build.append("\t(" + c.getId() + ")@" + l.percent());
       
     }
     
@@ -184,5 +184,14 @@ public class Cue implements Comparable<Cue>, Serializable, Cloneable
       return getTimeMils();
     else
       return getDownTime().multiply(new BigDecimal(1000)).longValue();
+  }
+  
+  public Channel findChannel(int id)
+  {
+    for(Channel c : levels.keySet())
+      if(c.getId() == id)
+        return c;
+    
+    return null;
   }
 }
