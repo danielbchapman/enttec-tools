@@ -8,6 +8,7 @@
 
 <composite:interface>
 	<composite:attribute name="cue" type="com.danielbchapman.control.dmx.Cue"/>
+	<composite:attribute name="update" />
 </composite:interface>
 <composite:implementation>
 	<p:panel>
@@ -18,11 +19,14 @@
 					actionListener="#{cueBean.go}"
 					style="width:150px; height:150px; background: #0f0;"
 					value="GO #{cueBean.nextCue != null ? cueBean.nextCue.cueNumber : ''}">
+						<p:ajax update="#{cc.attrs.update}"/>
 				</h:commandButton>
 				<h:commandButton 
 					value="STOP/BACK" 
 					actionListener="#{cueBean.back}"
-					style="width:100px; height:75px; background: #f00;"/>
+					style="width:100px; height:75px; background: #f00;">
+					<p:ajax update="#{cc.attrs.update}"/>
+				</h:commandButton>
 			</p:panel>
 			
 			<p:panel styleClass="playback" style="display:inline-block; vertical-align:top;">
@@ -61,6 +65,7 @@
 				<p:commandButton 
 					value="Goto Cue Out" 
 					actionListener="#{cueBean.gotoCueZero}" 
+					update="#{cc.attrs.update}"
 					disabled="#{!cueBean.enableOut}"/>
 			</p:panel>
 		</div>

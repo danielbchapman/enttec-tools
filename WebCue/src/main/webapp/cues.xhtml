@@ -13,7 +13,7 @@
 			<ui:define name="main">
 				<div>
 					<h:form id="cue_list">
-						<cues:cueControls />
+						<cues:cueControls update=":cue_list"/>
 						<p:panel>
 							<p:inputText value="#{cueBean.addCueNumber}" placeholder="Cue Number"/>
 							<p:commandButton 
@@ -28,6 +28,7 @@
 							<p:commandButton 
 								value="Goto Cue"
 								actionListener="#{cueBean.gotoCue}" 
+								update=":cue_list"
 							/>
 						</p:panel>
 						<p:dataTable value="#{cueBean.stack}" var="cue" id="cue_stack">
