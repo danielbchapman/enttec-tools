@@ -36,6 +36,18 @@
         </div><!--/.nav-collapse -->
       </div>
     </div>
+    
+		<h:panelGroup rendered="#{!controlBean.connected}">
+			<div style="width:100%; height: 75px; margin-top:60px; background: orange;">
+				<h2 class="error" style="color:black;">Unable to connect to DMX device, please check the connection.</h2>
+				<h:form>
+					<p:commandButton 
+						value="Connect"
+						actionListener="#{controlBean.connect}"
+					/>
+				</h:form>
+			</div>
+		</h:panelGroup>    
 	</f:view>
 </ui:insert>
 </html>
