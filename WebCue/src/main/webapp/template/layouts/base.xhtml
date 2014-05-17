@@ -11,6 +11,7 @@
 		<!-- 
 			<h:outputScript library="primefaces" name="jquery/jquery.js" />
 			 -->
+			<h:outputScript library="primefaces" name="jquery/jquery.js"/>
 			<script type="text/javascript" src="#{root}js/bootstrap.min.js"></script>			
 		</f:facet>
 		
@@ -68,10 +69,10 @@
 	</h:head>
 	
 	<h:body>
-		<pe:ajaxErrorHandler />
+		<!--  <pe:ajaxErrorHandler /> -->
 		<h:panelGroup rendered="#{!controlBean.connected}">
 			<div style="width:100%; height: 75px; background: orange;">
-				<h2 class="error">Unable to connect to DMX device, please check the connection.</h2>
+				<h2 class="error" style="color:black;">Unable to connect to DMX device, please check the connection.</h2>
 				<h:form>
 					<h:commandButton 
 						value="Connect"

@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd"
     version="2.2">
 	<converter>
-		<description></description>
+		<description>A simple converter that converts non-null big decimals</description>
 		<display-name>BigDecimalConverter</display-name>
 		<converter-id>bigD</converter-id>
 	</converter>

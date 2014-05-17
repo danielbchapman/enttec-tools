@@ -2,7 +2,7 @@ package com.danielbchapman.control.dmx;
 
 import java.io.Serializable;
 
-import com.lightassistant.utility.Utility;
+import com.danielbchapman.utility.Utility;
 
 import lombok.Data;
 

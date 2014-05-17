@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.danielbchapman.code.Pair;
-import com.lightassistant.utility.Utility;
+import com.danielbchapman.utility.Utility;
 
 public class TestFadeEngine
 {

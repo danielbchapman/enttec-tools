@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import com.danielbchapman.code.Pair;
-import com.lightassistant.utility.Safe;
+import com.danielbchapman.text.Safe;
 
 public class Cue implements Comparable<Cue>, Serializable, Cloneable
 {

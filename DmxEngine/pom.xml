@@ -21,9 +21,14 @@
 			<version>0.1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.lightassistant</groupId>
+			<groupId>com.danielbchapman</groupId>
 			<artifactId>utilities</artifactId>
 			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.rxtx</groupId>
+			<artifactId>rxtx</artifactId>
+			<version>2.1.7</version>
 		</dependency>
 	</dependencies>	
 	<build>
